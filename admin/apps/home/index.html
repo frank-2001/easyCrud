@@ -1,0 +1,71 @@
+<header class="text-xl h-16 text-white p-4 bg-black/70 flex justify-between items-center">
+    <span>Home</span>
+</header>
+<div class="grid  p-8 gap-4">
+    <p class="grid gap-4">
+        <span class="font-bold uppercase text-2xl">EasyCrud</span>
+        <span>Generer un crud et un dashboard d'administration à partir de votre base des donnees!</span>
+        <div class="flex gap-4">
+            <button class="p-4 rounded bg-green-500 font-bold uppercase text-white" onclick="sync()">Actualiser la BDD</button>
+            <button class="p-4 rounded bg-green-500 font-bold uppercase text-white" onclick="init()">Reinitialiser la BDD</button>            
+        </div>
+    </p>
+    <div>
+        <span>Executer une requete SQL sur la BDD</span>
+        <form action="">
+            <textarea name="query" id="" class="w-full p-4 rounded" rows="5" placeholder="Prompt"></textarea>
+            <button class="bg-green-500 p-2 px-4 text-white rounded">valider</button>
+        </form>
+    </div>
+
+    <div class="min-h-32 h-auto p-4 text-white w-full bg-black" id="result">
+        Reponse |
+    </div>
+    
+</div>
+<script>
+    function result(data,color) {
+        $("#result").addClass('text-'+color);
+        $("#result").html(data);
+        $("#result").append('<br><button class="p-2 bg-green-500 text-white" onclick="location.reload()">Actualiser pour voir les modif</button>');   
+            
+    }
+    function sync() {
+        $.get("../server/init.php",
+            function (data, textStatus, jqXHR) {
+
+                result(data,'white')
+            },
+            ""
+        ).fail(e=>{
+            result(e.responseText,'red-500')
+        });
+    }
+
+    function init() {
+        $.get("../server/init.php?new",
+            function (data, textStatus, jqXHR) {
+                resul(data,'white')
+            },
+            ""
+        ).fail(e=>{
+            result(e.responseText,'red-500')
+        });
+    }
+    
+    $('form').submit(function (e) { 
+        e.preventDefault();
+        let form = new FormData(this)
+        $.post("../server/?db-query", formToDic(form),
+            function (data, textStatus, jqXHR) {
+                result(JSON.stringify(data),'white')
+            },
+            ""
+        ).fail(e=>{
+            result(e.responseText,'red-500')
+        });    
+    });
+
+
+</script>
+<div class="h-20"></div>
